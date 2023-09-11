@@ -1,0 +1,250 @@
+assignment no 04:
+create table borrower (rollin int, name varchar(9), dateofissue date, nameofbook varchar(9), status varchar(9));
+create table fine (rollno int, finedate date, amt int);
+
+insert into borrower values (1, 'ratnesh', to_date('2022-10-22', 'YYYY-MM-DD'), 'gita', 'i');
+select * from borrower;
+
+declare
+roll int := 1;
+bname varchar(9) := 'gita';
+dateissue date;
+nodays int;
+nodaystobefined int := 0;
+amount int := 0;
+exvalidroll exception;
+
+begin
+if (roll < 0) then raise exvalidroll;
+end if;
+select dateofissue into dateissue from borrower where rollin = roll and nameofbook = bname;
+
+nodays := sysdate - dateissue;
+if (nodays >15 and nodays<30) then nodaystobefined := nodays - 15;
+amount:= nodaystobefined * 5;
+elsif (nodays> 30) then nodaystobefined := nodays - 15;
+amount:= nodaystobefined * 50;
+else
+amount:= 0;
+end if;
+insert into fine values(roll, sysdate, amount);
+update borrower set status = 'r' where rollin = roll and nameofbook = bname;
+
+exception
+when exvalidroll then dbms_output.put_line('roll is not valid');
+when no_data_found then dbms_output.put_line('data not found');
+when others then dbms_output.put_line('other error');
+end ;
+
+select * from borrower;
+select * from fine;
+
+***********************************************************************************************************************************************
+***********************************************************************************************************************************************
+***********************************************************************************************************************************************
+assignment no 04:
+declare
+roll int:=&roll_no;
+b_name varchar(20):='&name_of_book';
+mdays int:=0;
+ndays date;
+fine_amt int:=0;
+begin
+select date_of_i into ndays from borrower_t7 where roll_no=roll and name_of_book=b_name;
+mdays:=sysdate-ndays;
+if mdays>=15 and mdays<30 then
+fine_amt:=(mdays-15)*5;
+elsif mdays>=30 then
+fine_amt:=15*5+(mdays-30)*50;
+end if;
+update borrower_t7 set status='r' where roll_no=roll and name_of_book=b_name;
+if fine_amt>0 then 
+insert into fine_t7 values(roll,sysdate,fine_amt);
+end if;
+exception
+when no_data_found then
+dbms_output.put_line('No data found');
+when others then
+dbms_output.put_line('Exception occurred');
+end//
+********************************************************************************************************************
+********************************************************************************************************************
+********************************************************************************************************************
+
+***********************************************************************************************************************************************
+ 'title':'c', 'content':'procedural language', 'author':'yashwant kanetkar', 'author_age':25, 'dop':ISODate('2016-05-13T00:00:00Z'), 'category':'IT', 'comment':[{'name':'sandesh', 'remarks': 'very good'}, {'name':'ravi', 'remarks':'nice'}]
+
+***********************************************************************************************************************************************
+***********************************************************************************************************************************************
+
+assignment no 5 plsql block
+
+ mysql> use stud;
+Database changed
+mysql> show tables;
++----------------+
+| Tables_in_stud |
++----------------+
+| result         |
+| studmarks      |
++----------------+
+2 rows in set (0.01 sec)
+
+mysql> desc result;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| rollno | int         | YES  |     | NULL    |       |
+| name   | varchar(12) | YES  |     | NULL    |       |
+| class  | varchar(22) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> desc studmarks;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| name  | varchar(20) | YES  |     | NULL    |       |
+| marks | int         | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> delimiter //
+
+create procedure proc_grade (in rollno tinyint, in name varchar(14), in marks int) begin declare class varchar(22);
+    -> if marks >= 990 and marks <= 1500 then set class = "distinction";
+    -> elseif marks >= 900 and marks <= 989 then set class = 'first class';
+    -> elseif marks >= 825 and marks <= 899 then set class = 'second class';
+    -> elseif marks >= 700 and marks <= 824 then set class = 'pass class';
+    -> else set class = 'fail';
+    -> end if;
+    -> insert into studmarks values(name, marks);
+    -> insert into result values(rollno, name, class);
+    -> end //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> call proc_grade(1, 'aryan', 850);
+    -> //
+Query OK, 1 row affected (0.01 sec)
+
+mysql> call proc_grade(2, 'peter', 1000);//
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from studmarks;
+    -> //
++-------+-------+
+| name  | marks |
++-------+-------+
+| aryan |   850 |
+| peter |  1000 |
++-------+-------+
+2 rows in set (0.00 sec)
+
+mysql> select * from result;//
++--------+-------+--------------+
+| rollno | name  | class        |
++--------+-------+--------------+
+|      1 | aryan | second class |
+|      2 | peter | distinction  |
++--------+-------+--------------+
+2 rows in set (0.00 sec)
+
+**************************************************************************************************************************************
+
+create function tot_stud(classname varchar(25)) returns int deterministic begin declare total int(20); 
+    -> select distinct count(*) into total from result where class = classname;
+    -> return total;
+    -> end //
+Query OK, 0 rows affected, 1 warning (0.01 sec)
+
+mysql> select tot_stud('second class');
++--------------------------+
+| tot_stud('second class') |
++--------------------------+
+|                        1 |
++--------------------------+
+1 row in set (0.00 sec)
+
+mysql> select tot_stud('pass class');
++------------------------+
+| tot_stud('pass class') |
++------------------------+
+|                      0 |
++------------------------+
+1 row in set (0.00 sec)
+
+
+***********************************************************************************************************************************************
+***********************************************************************************************************************************************
+***********************************************************************************************************************************************
+assignment no 6:
+
+create table student(rollno int, name varchar(29), marks int);
+insert into student values(1, 'abc', 39);
+insert into student values(2, 'pqr', 35);
+insert into student values(3, 'xyz', 41);
+insert into student values(4, 'cde', 37);
+insert into student values(5, 'lmn', 46);
+select * from student;
+begin
+update student set marks = 40 where marks between 35 and 39;
+if sql%notfound then dbms_output.put_line('no records were updated');
+else  dbms_output.put_line('total records updated:' || sql%rowcount);
+end if;
+end ;
+
+select * from student;
+
+create table newstudent(rollno int, name varchar(22), marks int);
+insert into newstudent values(1,'abc',45);
+insert into newstudent values(3,'xyz',45);
+insert into newstudent values(7,'xyzr',95);
+insert into newstudent values(8,'pqrs',65);
+select * from newstudent;
+
+declare
+cursor cur_s is select * from student;
+cursor cur_new(a int) is select * from newstudent where rollno = a;
+nrec newstudent%rowtype;
+begin
+for srec in cur_s
+loop
+open cur_new(srec.rollno);
+fetch cur_new into nrec;
+if cur_new%notfound then insert into newstudent values(srec.rollno, srec.name, srec.marks);
+end if;
+close cur_new;
+end loop;
+end ;
+
+
+***********************************************************************************************************************************************
+***********************************************************************************************************************************************
+***********************************************************************************************************************************************
+assignment no - 07
+
+create trigger t after update on library for each row begin declare a varchar(9);
+    -> set a = 'updated';
+    -> insert into libaudit values(old.bid, old.title, old.authors, old.edition, old.noofcopies, curdate(), a, current_user());
+    -> end //
+mysql> update library set authors = 'kapil mishra' where bid=1;
+
+create trigger t1 after delete on library for each row begin declare b varchar(9);
+    -> set b = 'deleted';
+    -> insert into libaudit values(old.bid, old.title, old.authors, old.edition, old.noofcopies, curdate(), b, current_user());
+    -> end //
+mysql> delete from library where bid=2;
+
+create trigger t2 before insert on trans for each row begin declare no int;
+    ->  if new.ir = 'i' then select noofcopies into no from library where bid=new.bid;
+    -> if new.noofcopies > no then set new.noofcopies = no;
+    -> end if;
+    -> end if;
+    -> end//
+insert into trans values(10, 1, 'i', 3);
+
+mysql> create trigger t3 after insert on trans for each row begin if new.ir="I" then update library set noofcopies = noofcopies-new.noofcopies where bid=new.bid;
+else update library set noofcopies = noofcopies+new.noofcopies where bid=new.bid;
+end if;
+end ///
+
